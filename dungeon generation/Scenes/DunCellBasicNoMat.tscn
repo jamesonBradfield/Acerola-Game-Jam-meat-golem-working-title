@@ -12,9 +12,6 @@ script = ExtResource("1_o0fhe")
 
 [node name="floor" parent="." instance=ExtResource("2_u0ye8")]
 
-[node name="cieling" parent="." instance=ExtResource("2_u0ye8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9, 0)
-
 [node name="wall_down" parent="." instance=ExtResource("3_cvtvn")]
 
 [node name="door_right" parent="." instance=ExtResource("1_ccx2p")]

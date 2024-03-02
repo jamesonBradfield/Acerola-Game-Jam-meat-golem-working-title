@@ -5,6 +5,8 @@ extends Node3D
 func set_start(val:bool)->void:	
 	if Engine.is_editor_hint():
 		create_dungeon()
+	elif not Engine.is_editor_hint():
+		create_dungeon()
 @export var grid_map_path : NodePath
 @onready var grid_map : GridMap = get_node(grid_map_path)
 
@@ -15,10 +17,6 @@ var directions : Dictionary = {
 	"left" : Vector3i.LEFT, "right" : Vector3i.RIGHT
 }
 
-func _ready():
-	get_parent().generate()
-	await get_tree().create_timer(5).timeout
-	create_dungeon()
 
 func handle_none(cell:Node3D,dir:String):
 	cell.call("remove_door_"+dir)
