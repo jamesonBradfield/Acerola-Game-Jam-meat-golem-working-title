@@ -1,10 +1,9 @@
 @tool
 extends Node3D
-
+signal hallwaysDone
 @onready var grid_map : GridMap = $GridMap
 @onready var dun_mesh = $DunMesh
 @export var start : bool = false : set = set_start
-@export var wait_time : int = 2
 @export_range(0,1) var survival_chance : float = 0.25
 @export var border_size : int = 20 : set = set_border_size
 @export var room_number : int = 4
@@ -13,8 +12,6 @@ extends Node3D
 @export var min_room_size : int = 2 
 @export var max_room_size : int = 4
 @export_multiline var custom_seed : String = "" : set = set_seed 
-# room_tiles is an array of arrays where each array contains all the "tiles" that make up a room excluding hallways
-var room_tiles : Array[PackedVector3Array] = DungeonData.room_tiles
 # the center of all tiles in a room (i think) IE room center
 var room_positions : PackedVector3Array = DungeonData.room_positions
 
@@ -30,13 +27,15 @@ func set_seed(val:String)->void:
 func set_start(_val:bool)->void:
 	if Engine.is_editor_hint():
 		generate()
-		await get_tree().create_timer(wait_time).timeout
-		dun_mesh.create_dungeon()
+		# await get_tree().create_timer(wait_time).timeout
+		# dun_mesh.create_dungeon()
 	elif not Engine.is_editor_hint():
 		generate()
-		await get_tree().create_timer(wait_time).timeout
-		dun_mesh.create_dungeon()
+		# await get_tree().create_timer(wait_time).timeout
+		# dun_mesh.create_dungeon()
 
+func _ready():
+	set_start(true)
 func visualize_border():
 	grid_map.clear()
 	for i in range(-1,border_size+1):
@@ -46,7 +45,7 @@ func visualize_border():
 		grid_map.set_cell_item( Vector3i(-1,0,i),3)
 
 func generate():
-	room_tiles.clear()
+	DungeonData.room_tiles.clear()
 	room_positions.clear()
 	var t : int = 0
 	if custom_seed : set_seed(custom_seed)
@@ -111,8 +110,8 @@ func create_hallways(hallway_graph:AStar2D):
 	for p in hallway_graph.get_point_ids():
 		for c in hallway_graph.get_point_connections(p):
 			if c>p:
-				var room_from : PackedVector3Array = room_tiles[p]
-				var room_to : PackedVector3Array = room_tiles[c]
+				var room_from : PackedVector3Array = DungeonData.room_tiles[p]
+				var room_to : PackedVector3Array = DungeonData.room_tiles[c]
 				var tile_from : Vector3 = room_from[0]
 				var tile_to : Vector3 = room_to[0]
 				for t in room_from:
@@ -148,6 +147,7 @@ func create_hallways(hallway_graph:AStar2D):
 			if grid_map.get_cell_item(pos) <0:
 				grid_map.set_cell_item(pos,1)
 		if _t%16 == 15: await  get_tree().create_timer(0).timeout
+	hallwaysDone.emit()	
 	
 	
 	
@@ -181,8 +181,7 @@ func make_room(rec:int):
 			var pos : Vector3i = start_pos + Vector3i(c,0,r)
 			grid_map.set_cell_item(pos,0)
 			room.append(pos)
-	room_tiles.append(room)
-	print("room_tiles")
+	DungeonData.room_tiles.append(room)
 	var avg_x : float = start_pos.x + (float(width)/2)
 	var avg_z : float = start_pos.z + (float(height)/2)
 	var pos : Vector3 = Vector3(avg_x,0,avg_z)

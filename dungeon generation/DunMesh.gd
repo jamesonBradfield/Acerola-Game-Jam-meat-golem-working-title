@@ -2,21 +2,21 @@
 extends Node3D
 
 @export var start : bool = false : set = set_start
-func set_start(val:bool)->void:	
-	if Engine.is_editor_hint():
-		create_dungeon()
-	elif not Engine.is_editor_hint():
-		create_dungeon()
+@export var sort : bool = false : set = sortTiles
 @export var grid_map_path : NodePath
 @onready var grid_map : GridMap = get_node(grid_map_path)
-
+var parent_base : PackedScene = preload("res://dungeon generation/Scenes/parent_base.tscn")
 var dun_cell_scene : PackedScene = preload("res://dungeon generation/Scenes/DunCellBasicNoMat.tscn")
-
 var directions : Dictionary = {
 	"up" :Vector3i.FORWARD, "down" : Vector3i.BACK,
 	"left" : Vector3i.LEFT, "right" : Vector3i.RIGHT
 }
 
+func set_start(val:bool)->void:	
+	if Engine.is_editor_hint():
+		create_dungeon()
+	elif not Engine.is_editor_hint():
+		create_dungeon()
 
 func handle_none(cell:Node3D,dir:String):
 	cell.call("remove_door_"+dir)
@@ -74,4 +74,33 @@ func create_dungeon():
 				else:
 					var key : String = str(cell_index) + str(cell_n_index)
 					call("handle_"+key,dun_cell,directions.keys()[i])
-		if t%10 == 9 : await get_tree().create_timer(0).timeout
+		if t%20 == 9 : await get_tree().create_timer(0).timeout
+	sortTiles(true)
+	
+func sortTiles(_val:bool)->void:
+	var index: int = 0
+
+	# loop through all rooms in index
+	for i in range(DungeonData.room_tiles.size()):
+		# print("index: " + str(index))
+		var parent = parent_base.instantiate()
+		# parent.position = DungeonData.room_positions[index]
+		parent.name = "room_"+str(index)
+		%parent_holder.add_child(parent)
+		parent.set_owner(owner)
+		var child_index : int = 0
+		# loop through all children
+		for c in self.get_children().size():
+			print(child_index)
+			# choose a child to test against room_tiles
+			var child_node : Node3D = self.get_child(child_index)
+			if DungeonData.room_tiles[index].find(child_node.position - Vector3(0.5,0,0.5)) != -1:
+				self.remove_child(child_node)
+				parent.add_child(child_node)
+				child_node.set_owner(owner)
+			child_index += 1
+		index += 1
+
+
+func _on_gun_gen_hallways_done():
+	set_start(true)
