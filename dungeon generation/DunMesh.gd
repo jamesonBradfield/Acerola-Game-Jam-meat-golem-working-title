@@ -51,6 +51,9 @@ func create_dungeon():
 		remove_child(c)
 		c.queue_free()
 	var t : int = 0
+	var parent = parent_base.instantiate()
+	add_child(parent)
+	parent.set_owner(owner)
 	for cell in grid_map.get_used_cells():
 		var cell_index : int = grid_map.get_cell_item(cell)
 		# cell id Table of contents
@@ -62,9 +65,16 @@ func create_dungeon():
 		if cell_index <=2\
 		&& cell_index >=0:
 			var dun_cell : Node3D = dun_cell_scene.instantiate()
+			var last_dun_cell : Node3D
 			dun_cell.position = Vector3(cell) + Vector3(0.5,0,0.5)
-			add_child(dun_cell)
+			parent.add_child(dun_cell)
 			dun_cell.set_owner(owner)
+			if dun_cell.position.distance_to(last_dun_cell.position) > 1:
+				print("new room is being made")
+				parent = parent_base.instantiate()
+				add_child(parent)
+				parent.set_owner(owner)
+			last_dun_cell = dun_cell
 			t+=1
 			for i in 4:
 				var cell_n : Vector3i = cell + directions.values()[i]
@@ -77,37 +87,7 @@ func create_dungeon():
 					call("handle_"+key,dun_cell,directions.keys()[i])
 		if t%20 == 9 : await get_tree().create_timer(0).timeout
 	print("mesh generation is done.")
-	sortTiles(true)
 
-func sortTiles(_val:bool)->void:
-	print("sort tile has started.")
-	var index: int = 0
-	# loop through all rooms in index
-	for i in range(DungeonData.room_tiles.size()):
-		# print("index: " + str(index))
-		var parent = parent_base.instantiate()
-		# parent.position = DungeonData.room_positions[index]
-		parent.name = "room_"+str(index)
-		%parent_holder.add_child(parent)
-		parent.set_owner(owner)
-		var child_index : int = 0
-		# loop through all children
-		for c in get_child_count():
-			print(get_child_count())
-			# choose a child to test against room_tiles
-			var child_node : Node3D = self.get_child(child_index)
-			print("child node : " + str(child_node))
-			# this only looks for one "pairing" in our room_tiles that matches.
-			if DungeonData.room_tiles[index].find(child_node.position - Vector3(0.5,0,0.5)) != -1:
-				for cell in grid_map.get_used_cells():
-					var cell_index : int = grid_map.get_cell_item(cell)
-					if cell_index <=1\
-					&& cell_index >=0:
-						print(DungeonData.room_tiles[index])
-						child_node.reparent(parent)
-						child_node.set_owner(owner)
-			child_index += 1
-		index += 1
 
 
 func _on_gun_gen_hallways_done():
