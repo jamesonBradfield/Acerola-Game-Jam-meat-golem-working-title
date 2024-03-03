@@ -2,7 +2,7 @@
 extends Node3D
 
 @export var start : bool = false : set = set_start
-@export var sort : bool = false : set = sortTiles
+# @export var sort : bool = false : set = sortTiles
 @export var grid_map_path : NodePath
 @onready var grid_map : GridMap = get_node(grid_map_path)
 var parent_base : PackedScene = preload("res://dungeon generation/Scenes/parent_base.tscn")
@@ -54,6 +54,8 @@ func create_dungeon():
 	var parent = parent_base.instantiate()
 	add_child(parent)
 	parent.set_owner(owner)
+	var last_dun_cell
+	var total_distance_from_start : int = 0
 	for cell in grid_map.get_used_cells():
 		var cell_index : int = grid_map.get_cell_item(cell)
 		# cell id Table of contents
@@ -65,16 +67,9 @@ func create_dungeon():
 		if cell_index <=2\
 		&& cell_index >=0:
 			var dun_cell : Node3D = dun_cell_scene.instantiate()
-			var last_dun_cell : Node3D
 			dun_cell.position = Vector3(cell) + Vector3(0.5,0,0.5)
-			parent.add_child(dun_cell)
-			dun_cell.set_owner(owner)
-			if dun_cell.position.distance_to(last_dun_cell.position) > 1:
-				print("new room is being made")
-				parent = parent_base.instantiate()
-				add_child(parent)
-				parent.set_owner(owner)
-			last_dun_cell = dun_cell
+			# print("last_dun_cell : " + str(last_dun_cell.position))
+			set_cell_room(dun_cell,last_dun_cell,total_distance_from_start,cell_index,parent)
 			t+=1
 			for i in 4:
 				var cell_n : Vector3i = cell + directions.values()[i]
@@ -88,7 +83,34 @@ func create_dungeon():
 		if t%20 == 9 : await get_tree().create_timer(0).timeout
 	print("mesh generation is done.")
 
+func set_cell_room(dun_cell,last_dun_cell,total_distance_from_start,cell_index,parent):
+	if last_dun_cell == null:	
+		last_dun_cell = dun_cell
+		return
 
+	if cell_index == 1:
+		add_child(dun_cell)
+		dun_cell.set_owner(owner)
+		return
+
+	print("distance between cells : "+ str(floor(dun_cell.position.distance_to(last_dun_cell.position))))
+
+	if dun_cell.position.distance_to(last_dun_cell.position) == 1:	
+		total_distance_from_start += dun_cell.position.distance_to(last_dun_cell.position)
+	elif dun_cell.position.distance_to(last_dun_cell.position) > 1:
+		print("total distance from start : " + str(total_distance_from_start))
+		if floor(dun_cell.position.distance_to(last_dun_cell.position)) == total_distance_from_start:
+			parent.add_child(dun_cell)
+			dun_cell.set_owner(owner)
+			total_distance_from_start = 0
+		elif floor(dun_cell.position.distance_to(last_dun_cell.position)) < total_distance_from_start \
+			|| floor(dun_cell.position.distance_to(last_dun_cell.position)) > total_distance_from_start:
+		# print("new room is being made")
+			parent = parent_base.instantiate()
+			add_child(parent)
+			parent.set_owner(owner)
+			total_distance_from_start = 0
+		# print("cell_index : " + str(cell_index))
 
 func _on_gun_gen_hallways_done():
 	set_start(true)
