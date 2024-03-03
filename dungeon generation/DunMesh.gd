@@ -51,10 +51,10 @@ func create_dungeon():
 		remove_child(c)
 		c.queue_free()
 	var t : int = 0
-	var parent = parent_base.instantiate()
+	var parent : Node3D = parent_base.instantiate()
 	add_child(parent)
 	parent.set_owner(owner)
-	var last_dun_cell
+	var last_dun_cell : Node3D
 	var total_distance_from_start : int = 0
 	for cell in grid_map.get_used_cells():
 		var cell_index : int = grid_map.get_cell_item(cell)
@@ -68,8 +68,40 @@ func create_dungeon():
 		&& cell_index >=0:
 			var dun_cell : Node3D = dun_cell_scene.instantiate()
 			dun_cell.position = Vector3(cell) + Vector3(0.5,0,0.5)
-			# print("last_dun_cell : " + str(last_dun_cell.position))
-			set_cell_room(dun_cell,last_dun_cell,total_distance_from_start,cell_index,parent)
+			# HACK: this will cause a tile to be skipped we have to find a way to tell if we are making the first tile.
+			if last_dun_cell == null:	
+				last_dun_cell = dun_cell
+				return
+			# add hallways to DunMesh and close function
+			if cell_index == 1:
+				add_child(dun_cell)
+				dun_cell.set_owner(owner)
+				return
+			# print("distance between cells : "+ str(floor(dun_cell.position.distance_to(last_dun_cell.position))))
+			# check if we are making a room_tile right next to the last one
+			if dun_cell.position.distance_to(last_dun_cell.position) == 1:	
+				# if we are let's add to the total_distance this row
+				total_distance_from_start += dun_cell.position.distance_to(last_dun_cell.position)
+
+			# let's then check if we are making a bigger "leap"
+			elif dun_cell.position.distance_to(last_dun_cell.position) > 1:
+				# if we are let's print the total distance so we can compare it to our next jump distance
+				print("total distance from start : " + str(total_distance_from_start))
+				# then let's check if we are jumping our total_distance value (floor is for floating point precision errors)
+				if floor(dun_cell.position.distance_to(last_dun_cell.position)) == total_distance_from_start:
+				# finally let's add our cell to our room_parent
+					parent.add_child(dun_cell)
+					dun_cell.set_owner(owner)
+					# if we have jumped we should reset the distance for the next row skip.
+					total_distance_from_start = 0
+				elif floor(dun_cell.position.distance_to(last_dun_cell.position)) < total_distance_from_start \
+					|| floor(dun_cell.position.distance_to(last_dun_cell.position)) > total_distance_from_start:
+				# print("new room is being made")
+					parent = parent_base.instantiate()
+					add_child(parent)
+					parent.set_owner(owner)
+					total_distance_from_start = 0
+				# print("cell_index : " + str(cell_index))
 			t+=1
 			for i in 4:
 				var cell_n : Vector3i = cell + directions.values()[i]
@@ -83,34 +115,7 @@ func create_dungeon():
 		if t%20 == 9 : await get_tree().create_timer(0).timeout
 	print("mesh generation is done.")
 
-func set_cell_room(dun_cell,last_dun_cell,total_distance_from_start,cell_index,parent):
-	if last_dun_cell == null:	
-		last_dun_cell = dun_cell
-		return
 
-	if cell_index == 1:
-		add_child(dun_cell)
-		dun_cell.set_owner(owner)
-		return
-
-	print("distance between cells : "+ str(floor(dun_cell.position.distance_to(last_dun_cell.position))))
-
-	if dun_cell.position.distance_to(last_dun_cell.position) == 1:	
-		total_distance_from_start += dun_cell.position.distance_to(last_dun_cell.position)
-	elif dun_cell.position.distance_to(last_dun_cell.position) > 1:
-		print("total distance from start : " + str(total_distance_from_start))
-		if floor(dun_cell.position.distance_to(last_dun_cell.position)) == total_distance_from_start:
-			parent.add_child(dun_cell)
-			dun_cell.set_owner(owner)
-			total_distance_from_start = 0
-		elif floor(dun_cell.position.distance_to(last_dun_cell.position)) < total_distance_from_start \
-			|| floor(dun_cell.position.distance_to(last_dun_cell.position)) > total_distance_from_start:
-		# print("new room is being made")
-			parent = parent_base.instantiate()
-			add_child(parent)
-			parent.set_owner(owner)
-			total_distance_from_start = 0
-		# print("cell_index : " + str(cell_index))
 
 func _on_gun_gen_hallways_done():
 	set_start(true)
