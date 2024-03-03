@@ -46,6 +46,7 @@ func handle_22(cell:Node3D,dir:String):
 	cell.call("remove_door_"+dir)
 
 func create_dungeon():
+	print("create_dungeone has started.")
 	for c in get_children():
 		remove_child(c)
 		c.queue_free()
@@ -75,11 +76,12 @@ func create_dungeon():
 					var key : String = str(cell_index) + str(cell_n_index)
 					call("handle_"+key,dun_cell,directions.keys()[i])
 		if t%20 == 9 : await get_tree().create_timer(0).timeout
+	print("mesh generation is done.")
 	sortTiles(true)
-	
-func sortTiles(_val:bool)->void:
-	var index: int = 0
 
+func sortTiles(_val:bool)->void:
+	print("sort tile has started.")
+	var index: int = 0
 	# loop through all rooms in index
 	for i in range(DungeonData.room_tiles.size()):
 		# print("index: " + str(index))
@@ -90,14 +92,20 @@ func sortTiles(_val:bool)->void:
 		parent.set_owner(owner)
 		var child_index : int = 0
 		# loop through all children
-		for c in self.get_children().size():
-			print(child_index)
+		for c in get_child_count():
+			print(get_child_count())
 			# choose a child to test against room_tiles
 			var child_node : Node3D = self.get_child(child_index)
+			print("child node : " + str(child_node))
+			# this only looks for one "pairing" in our room_tiles that matches.
 			if DungeonData.room_tiles[index].find(child_node.position - Vector3(0.5,0,0.5)) != -1:
-				self.remove_child(child_node)
-				parent.add_child(child_node)
-				child_node.set_owner(owner)
+				for cell in grid_map.get_used_cells():
+					var cell_index : int = grid_map.get_cell_item(cell)
+					if cell_index <=1\
+					&& cell_index >=0:
+						print(DungeonData.room_tiles[index])
+						child_node.reparent(parent)
+						child_node.set_owner(owner)
 			child_index += 1
 		index += 1
 
