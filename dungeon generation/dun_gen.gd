@@ -13,8 +13,8 @@ signal hallwaysDone
 @export var max_room_size : int = 4
 @export_multiline var custom_seed : String = "" : set = set_seed 
 # the center of all tiles in a room (i think) IE room center
-var room_positions : PackedVector3Array = DungeonData.room_positions
-
+var room_positions : PackedVector3Array
+var room_tiles : Array[PackedVector3Array]
 func set_border_size(val : int)->void:
 	border_size = val
 	if Engine.is_editor_hint():
@@ -45,7 +45,7 @@ func visualize_border():
 		grid_map.set_cell_item( Vector3i(-1,0,i),3)
 
 func generate():
-	DungeonData.room_tiles.clear()
+	room_tiles.clear()
 	room_positions.clear()
 	var t : int = 0
 	if custom_seed : set_seed(custom_seed)
@@ -110,8 +110,8 @@ func create_hallways(hallway_graph:AStar2D):
 	for p in hallway_graph.get_point_ids():
 		for c in hallway_graph.get_point_connections(p):
 			if c>p:
-				var room_from : PackedVector3Array = DungeonData.room_tiles[p]
-				var room_to : PackedVector3Array = DungeonData.room_tiles[c]
+				var room_from : PackedVector3Array = room_tiles[p]
+				var room_to : PackedVector3Array = room_tiles[c]
 				var tile_from : Vector3 = room_from[0]
 				var tile_to : Vector3 = room_to[0]
 				for t in room_from:
@@ -181,7 +181,7 @@ func make_room(rec:int):
 			var pos : Vector3i = start_pos + Vector3i(c,0,r)
 			grid_map.set_cell_item(pos,0)
 			room.append(pos)
-	DungeonData.room_tiles.append(room)
+	room_tiles.append(room)
 	var avg_x : float = start_pos.x + (float(width)/2)
 	var avg_z : float = start_pos.z + (float(height)/2)
 	var pos : Vector3 = Vector3(avg_x,0,avg_z)
