@@ -7,13 +7,6 @@ var used_rooms : Array[bool]
 var player_scene : PackedScene = preload("res://addons/fpc/character.tscn")
 @onready var GunGen : Node3D = get_node("/root/GunGen")
 
-
-func find_room_nodes_center(index,dun_mesh_scale):
-	var sum : Vector3
-	for c in index.get_children():
-		sum += c.global_position
-	return sum/index.get_children().size()
-
 func set_used_rooms_to_false():
 	for index in room_nodes.size():
 		print("r is : " + str(index))
