@@ -12,11 +12,11 @@ extends Node
 func clear_room_purpose():
 	room_purpose = ""	
 
-func set_bounds_cast():
+func set_bounds_cast(max_half_width : int):
 	var room_center = self.position
 	bounds_cast.position = Vector3(0,.75,0)
 	room_trigger.position = Vector3.ZERO
-	bounds_cast.target_position = Vector3(0,0,10)
+	bounds_cast.target_position = Vector3(0,0,max_half_width)
 	var half_width = round(room_center.distance_to(bounds_cast.get_collision_point()))
 	print("half_width : " + str(half_width))
 

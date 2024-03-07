@@ -17,11 +17,16 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-DungeonData="*res://dungeon generation/dungeon_data.gd"
+dungeon_data="*res://dungeon generation/dungeon_data.gd"
+Panku="*res://addons/panku_console/console.tscn"
 
 [dotnet]
 
 project/assembly_name="Acerola first person Game Jam"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/panku_console/plugin.cfg")
 
 [filesystem]
 

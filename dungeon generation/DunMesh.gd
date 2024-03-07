@@ -8,6 +8,7 @@ var room_script = load("res://dungeon generation/room_script.gd")
 @export var grid_map_path : NodePath
 @export var debug_rooms : bool
 @onready var grid_map : GridMap = get_node(grid_map_path)
+var max_width_value : int
 var total_distance_from_start : int = 0
 @export var scaling_value : float  = 1
 var room_parent_index : int = 0
@@ -20,6 +21,7 @@ var directions : Dictionary = {
 
 func _ready():
 	get_parent().connect("scale_mesh",set_scaling_value)
+	get_parent().connect("get_max_room_size",set_max_width_value)
 
 func set_start(_val:bool)->void:	
 	if Engine.is_editor_hint():
@@ -118,7 +120,7 @@ func create_dungeon():
 	ready_room_for_bounds.emit()
 	# set_self_scale(scaling_value)
 	offset_room_children_by_new_parent_position()
-	get_room_width_and_height.emit()
+	emit_signal("get_room_width_and_height",max_width_value)
 	dungeon_data.set_used_rooms_to_false()
 	dungeon_data.spawn_player_in_random_room(scaling_value)
 	if debug_rooms:
@@ -186,3 +188,7 @@ func set_self_scale(arg):
 
 func set_scaling_value(arg):
 	scaling_value = arg
+
+func set_max_width_value(arg):
+	print("max_width_value has been changed to : " + str(arg))
+	max_width_value = arg

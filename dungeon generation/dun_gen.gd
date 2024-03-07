@@ -2,6 +2,7 @@
 extends Node3D
 signal hallwaysDone
 signal scale_mesh(mesh_scale)
+signal get_max_room_size(max_room_size)
 @onready var grid_map : GridMap = $GridMap
 @onready var dun_mesh = $DunMesh
 @export_range(0,1) var survival_chance : float = 0.25
@@ -10,7 +11,7 @@ signal scale_mesh(mesh_scale)
 @export var room_margin : int = 1
 @export var room_recursion : int = 15
 @export var min_room_size : int = 2 
-@export var max_room_size : int = 4
+@export var max_room_size : int = 4 : set = set_max_room_size
 @export var mesh_scale : int : set = set_mesh_scale
 @export var start : bool = false : set = set_start
 @export var clear : bool = false : set = set_clear
@@ -46,6 +47,9 @@ func set_mesh_scale(val:float):
 	mesh_scale = val
 	emit_signal("scale_mesh","val")
 
+func set_max_room_size(val:int):
+	max_room_size = val
+	emit_signal("get_max_room_size","val")
 
 func _ready():
 	set_start(true)
