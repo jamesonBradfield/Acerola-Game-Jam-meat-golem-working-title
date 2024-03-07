@@ -1,9 +1,9 @@
 @tool
 extends Node3D
 signal hallwaysDone
+signal scale_mesh(mesh_scale)
 @onready var grid_map : GridMap = $GridMap
 @onready var dun_mesh = $DunMesh
-@export var start : bool = false : set = set_start
 @export_range(0,1) var survival_chance : float = 0.25
 @export var border_size : int = 20 : set = set_border_size
 @export var room_number : int = 4
@@ -11,10 +11,14 @@ signal hallwaysDone
 @export var room_recursion : int = 15
 @export var min_room_size : int = 2 
 @export var max_room_size : int = 4
+@export var mesh_scale : int : set = set_mesh_scale
+@export var start : bool = false : set = set_start
+@export var clear : bool = false : set = set_clear
+@export var can_reload_level_with_space : bool = false
 @export_multiline var custom_seed : String = "" : set = set_seed 
 # the center of all tiles in a room (i think) IE room center
 var room_positions : PackedVector3Array
-var room_tiles : Array[PackedVector3Array]
+
 func set_border_size(val : int)->void:
 	border_size = val
 	if Engine.is_editor_hint():
@@ -25,19 +29,29 @@ func set_seed(val:String)->void:
 	seed(val.hash())
 
 func set_start(_val:bool)->void:
+	if dun_mesh == null:
+		print("dun_mesh can't be found.")
 	if Engine.is_editor_hint():
 		generate()
-		# await get_tree().create_timer(wait_time).timeout
-		# dun_mesh.create_dungeon()
 	elif not Engine.is_editor_hint():
 		generate()
-		# await get_tree().create_timer(wait_time).timeout
-		# dun_mesh.create_dungeon()
+
+func set_clear(_val:bool):
+	for c in dun_mesh.get_children():
+		dun_mesh.remove_child(c)
+		c.queue_free()
+
+
+func set_mesh_scale(val:float):
+	mesh_scale = val
+	emit_signal("scale_mesh","val")
+
 
 func _ready():
 	set_start(true)
 func visualize_border():
-	grid_map.clear()
+	if grid_map:
+		grid_map.clear()
 	for i in range(-1,border_size+1):
 		grid_map.set_cell_item( Vector3i(i,0,-1),3)
 		grid_map.set_cell_item( Vector3i(i,0,border_size),3)
@@ -45,7 +59,7 @@ func visualize_border():
 		grid_map.set_cell_item( Vector3i(-1,0,i),3)
 
 func generate():
-	room_tiles.clear()
+	dungeon_data.room_tiles.clear()
 	room_positions.clear()
 	var t : int = 0
 	if custom_seed : set_seed(custom_seed)
@@ -110,8 +124,8 @@ func create_hallways(hallway_graph:AStar2D):
 	for p in hallway_graph.get_point_ids():
 		for c in hallway_graph.get_point_connections(p):
 			if c>p:
-				var room_from : PackedVector3Array = room_tiles[p]
-				var room_to : PackedVector3Array = room_tiles[c]
+				var room_from : PackedVector3Array = dungeon_data.room_tiles[p]
+				var room_to : PackedVector3Array = dungeon_data.room_tiles[c]
 				var tile_from : Vector3 = room_from[0]
 				var tile_to : Vector3 = room_to[0]
 				for t in room_from:
@@ -148,7 +162,7 @@ func create_hallways(hallway_graph:AStar2D):
 				grid_map.set_cell_item(pos,1)
 		if _t%16 == 15: await  get_tree().create_timer(0).timeout
 	hallwaysDone.emit()	
-	
+	emit_signal("scale_mesh",mesh_scale)
 	
 	
 
@@ -181,8 +195,12 @@ func make_room(rec:int):
 			var pos : Vector3i = start_pos + Vector3i(c,0,r)
 			grid_map.set_cell_item(pos,0)
 			room.append(pos)
-	room_tiles.append(room)
+	dungeon_data.room_tiles.append(room)
 	var avg_x : float = start_pos.x + (float(width)/2)
 	var avg_z : float = start_pos.z + (float(height)/2)
 	var pos : Vector3 = Vector3(avg_x,0,avg_z)
 	room_positions.append(pos)
+
+func _process(_delta):
+	if Input.is_action_just_pressed("ui_accept") && can_reload_level_with_space == true:
+		set_start(true)

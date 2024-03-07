@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://ctqwo8n87hvn2"
-path="res://.godot/imported/basic_wall_no_mat.glb-a03ee20ed1797270aa510325a032e2c8.scn"
+path="res://.godot/imported/wall.glb-cd43005fb2a0a0ce6daba396bbeb273e.scn"
 
 [deps]
 
-source_file="res://dungeon generation/Models/basic_wall_no_mat.glb"
-dest_files=["res://.godot/imported/basic_wall_no_mat.glb-a03ee20ed1797270aa510325a032e2c8.scn"]
+source_file="res://dungeon generation/Models/wall.glb"
+dest_files=["res://.godot/imported/wall.glb-cd43005fb2a0a0ce6daba396bbeb273e.scn"]
 
 [params]
 
