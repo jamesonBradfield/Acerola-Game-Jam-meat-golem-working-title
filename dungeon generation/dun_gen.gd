@@ -51,8 +51,8 @@ func set_max_room_size(val:int):
 	max_room_size = val
 	emit_signal("get_max_room_size","val")
 
-func _ready():
-	set_start(true)
+# func _ready():
+# 	set_start(true)
 func visualize_border():
 	if grid_map:
 		grid_map.clear()
@@ -179,8 +179,8 @@ func make_room(rec:int):
 	if !rec>0:
 		return
 	
-	var width : int = (randi() % (max_room_size - min_room_size)) + min_room_size
-	var height : int = (randi() % (max_room_size - min_room_size)) + min_room_size
+	var width : int = randi_range(min_room_size,max_room_size)
+	var height : int = randi_range(min_room_size,max_room_size)
 	
 	var start_pos : Vector3i 
 	start_pos.x = randi() % (border_size - width + 1)

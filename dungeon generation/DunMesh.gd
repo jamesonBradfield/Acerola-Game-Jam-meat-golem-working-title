@@ -122,7 +122,7 @@ func create_dungeon():
 	offset_room_children_by_new_parent_position()
 	emit_signal("get_room_width_and_height",max_width_value)
 	dungeon_data.set_used_rooms_to_false()
-	dungeon_data.spawn_player_in_random_room(scaling_value)
+	# dungeon_data.spawn_player_in_random_room(scaling_value)
 	if debug_rooms:
 		hide_each_room_for_debugging()
 

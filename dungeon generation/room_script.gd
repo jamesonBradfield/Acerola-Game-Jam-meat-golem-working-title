@@ -16,9 +16,11 @@ func set_bounds_cast(max_half_width : int):
 	var room_center = self.position
 	bounds_cast.position = Vector3(0,.75,0)
 	room_trigger.position = Vector3.ZERO
-	bounds_cast.target_position = Vector3(0,0,max_half_width)
+	bounds_cast.target_position = Vector3(0,0,30)
 	var half_width = round(room_center.distance_to(bounds_cast.get_collision_point()))
-	print("half_width : " + str(half_width))
+	var box : BoxShape3D = BoxShape3D.new()
+	box.size = Vector3(half_width,1,1)
+	room_trigger.shape = box
 
 # we need a signal for setting this stuff as child of area
 func create_trigger():
@@ -29,8 +31,6 @@ func create_trigger():
 	add_child(raycast)
 	raycast.set_owner(owner)
 	raycast.name = "bounds_cast"
-	var box : Shape3D = BoxShape3D.new()
-	col.shape = box
 	col.name = "room_trigger"
 	room_trigger = col
 	bounds_cast = raycast
