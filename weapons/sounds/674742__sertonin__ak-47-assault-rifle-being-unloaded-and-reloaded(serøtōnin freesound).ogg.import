@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dqgwaa8dl16d"
+path="res://.godot/imported/674742__sertonin__ak-47-assault-rifle-being-unloaded-and-reloaded(serøtōnin freesound).ogg-eab99ed2f64737a566e7ef7c1e10dab6.oggvorbisstr"
+
+[deps]
+
+source_file="res://weapons/sounds/674742__sertonin__ak-47-assault-rifle-being-unloaded-and-reloaded(serøtōnin freesound).ogg"
+dest_files=["res://.godot/imported/674742__sertonin__ak-47-assault-rifle-being-unloaded-and-reloaded(serøtōnin freesound).ogg-eab99ed2f64737a566e7ef7c1e10dab6.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

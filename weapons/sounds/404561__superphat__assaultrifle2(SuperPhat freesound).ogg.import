@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://wmjo3ot83rtk"
+path="res://.godot/imported/404561__superphat__assaultrifle2(SuperPhat freesound).ogg-f8fff80bcee82f6c3fa7bd96be1db74d.oggvorbisstr"
+
+[deps]
+
+source_file="res://weapons/sounds/404561__superphat__assaultrifle2(SuperPhat freesound).ogg"
+dest_files=["res://.godot/imported/404561__superphat__assaultrifle2(SuperPhat freesound).ogg-f8fff80bcee82f6c3fa7bd96be1db74d.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

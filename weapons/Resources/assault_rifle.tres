@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="Weapons" load_steps=5 format=3 uid="uid://blq4d038ey5bi"]
+
+[ext_resource type="ArrayMesh" uid="uid://8piacjuburu5" path="res://weapons/Models/assault_rifle.obj" id="1_2kni8"]
+[ext_resource type="AudioStream" uid="uid://cgbi4ejvu8l2b" path="res://weapons/sounds/377145__nioczkus__pistol-draw-unholster.ogg" id="1_7rkc6"]
+[ext_resource type="Script" path="res://weapons/weapons.gd" id="1_68074"]
+[ext_resource type="AudioStream" uid="uid://wmjo3ot83rtk" path="res://weapons/sounds/404561__superphat__assaultrifle2(SuperPhat freesound).ogg" id="4_j2os5"]
+
+[resource]
+script = ExtResource("1_68074")
+name = &"assault_rifle"
+position = Vector3(0.865, -0.20466, -1.06344)
+rotation = Vector3(0, 0, 0)
+mesh = ExtResource("1_2kni8")
+activate_animation = &"assault_rifle_ready"
+shooting_animation = &"assault_rifle_shoot"
+fire_rate = 0.25
+damage = 25
+max_ammo = 10
+current_ammo = 0
+is_semi_auto = false
+explosive = false
+activate_sound = ExtResource("1_7rkc6")
+shooting_sound = ExtResource("4_j2os5")
+spray_randomness_vertical = 0.0
+spray_randomness_horizontal = 0.0
+raycast_range = 30.0

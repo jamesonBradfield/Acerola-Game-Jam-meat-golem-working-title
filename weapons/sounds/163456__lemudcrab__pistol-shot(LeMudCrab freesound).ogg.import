@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c5nsodo3ctv1n"
+path="res://.godot/imported/163456__lemudcrab__pistol-shot(LeMudCrab freesound).ogg-5c45ccbdc884a255991f32f5ed2e9f7a.oggvorbisstr"
+
+[deps]
+
+source_file="res://weapons/sounds/163456__lemudcrab__pistol-shot(LeMudCrab freesound).ogg"
+dest_files=["res://.godot/imported/163456__lemudcrab__pistol-shot(LeMudCrab freesound).ogg-5c45ccbdc884a255991f32f5ed2e9f7a.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
