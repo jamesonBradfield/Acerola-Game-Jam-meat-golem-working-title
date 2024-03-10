@@ -1,0 +1,55 @@
+[gd_scene load_steps=6 format=3 uid="uid://jx4uiri818c3"]
+
+[ext_resource type="PackedScene" uid="uid://cc1m2a1obsyn4" path="res://addons/fpc/character.tscn" id="1_i7qk7"]
+[ext_resource type="PackedScene" uid="uid://ux8n3eom7qj4" path="res://enemies/target.tscn" id="2_qwje4"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qmlhk"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_v8ejf"]
+sky_material = SubResource("ProceduralSkyMaterial_qmlhk")
+
+[sub_resource type="Environment" id="Environment_u8q67"]
+background_mode = 2
+sky = SubResource("Sky_v8ejf")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="World" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_u8q67")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.599563, -0.5, -12.2552)
+use_collision = true
+collision_mask = 2
+size = Vector3(14.7842, 1, 38.6576)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.599563, 2.56378, -31.1418)
+use_collision = true
+collision_mask = 2
+size = Vector3(14.7842, 7.12756, 0.88449)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.49389, 2.56378, -12.3282)
+use_collision = true
+collision_mask = 2
+size = Vector3(0.5973, 7.12756, 38.5116)
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.65429, 2.56378, -12.2861)
+use_collision = true
+collision_mask = 2
+size = Vector3(0.5973, 7.12756, 38.7431)
+
+[node name="Character" parent="." instance=ExtResource("1_i7qk7")]
+
+[node name="Target" parent="." instance=ExtResource("2_qwje4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.40866, 0, -17.579)
