@@ -27,7 +27,7 @@ func spawn_player_in_random_room(dun_mesh_scale_t : float):
 		get_tree().get_root().get_node("/root/GunGen/Character").free()
 	var player = player_scene.instantiate()
 	var new_player_position = room_nodes[get_random_unused_room()].position
-	new_player_position = Vector3(new_player_position.x*dun_mesh_scale_t,new_player_position.y+1,new_player_position.z*dun_mesh_scale_t)
+	new_player_position = Vector3(new_player_position.x,new_player_position.y+1,new_player_position.z)
 	player.position = new_player_position 
 	print("player is being spawned at : " + str(new_player_position))
 	GunGen.add_child(player)
