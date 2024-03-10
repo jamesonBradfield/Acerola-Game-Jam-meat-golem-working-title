@@ -12,6 +12,8 @@ extends CharacterBody3D
 @export var mouse_sensitivity : float = 0.1
 
 @export var initial_facing_direction : Vector3 = Vector3.ZERO
+@export var max_health : float
+@export var current_health : float
 
 @export_group("Nodes")
 @export var HEAD : Node3D
@@ -20,6 +22,7 @@ extends CharacterBody3D
 @export var JUMP_ANIMATION : AnimationPlayer
 @export var CROUCH_ANIMATION : AnimationPlayer
 @export var COLLISION_MESH : CollisionShape3D
+@onready var HEALTH_BAR = %PlayerHealthBar
 
 @export_group("Controls")
 # We are using UI controls because they are built into Godot Engine so they can be used right away
@@ -66,7 +69,7 @@ var gravity : float = ProjectSettings.get_setting("physics/3d/default_gravity") 
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	
+	PlayerGlobals.head = HEAD
 	# Set the camera rotation to whatever initial_facing_direction is
 	if initial_facing_direction:
 		HEAD.set_rotation_degrees(initial_facing_direction) # I don't want to be calling this function if the vector is zero
@@ -272,3 +275,13 @@ func _unhandled_input(event):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		HEAD.rotation_degrees.y -= event.relative.x * mouse_sensitivity
 		HEAD.rotation_degrees.x -= event.relative.y * mouse_sensitivity
+
+func take_damage(damage):
+	current_health = current_health - damage
+	var health_ratio = current_health/max_health
+	HEALTH_BAR.value = health_ratio*HEALTH_BAR.max_value
+	if current_health <= 0:
+		destroyed()
+
+func destroyed():
+	queue_free()

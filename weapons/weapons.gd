@@ -4,6 +4,7 @@ class_name Weapons extends Resource
 @export_category("Weapon Orientation")
 @export var position : Vector3
 @export var rotation : Vector3
+@export var gun_muzzle : Vector3
 @export_category("Visual Settings")
 @export var mesh : Mesh
 @export var activate_animation : StringName
@@ -17,9 +18,15 @@ class_name Weapons extends Resource
 @export var is_semi_auto : bool
 @export var explosive : bool
 @export var raycast_range : float 
+@export var shoot_cooldown_max : float 
+@export var shoot_cooldown_current : float 
 
 @export_category("sound effects")
 @export var activate_sound : AudioStreamOggVorbis
 @export var shooting_sound : AudioStreamOggVorbis
 @export var spray_randomness_vertical : float
 @export var spray_randomness_horizontal : float
+
+@export_category("doo_dads")
+@export var grenade_scene : PackedScene
+@export var grenade_force : float

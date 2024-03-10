@@ -1,0 +1,43 @@
+[gd_scene load_steps=7 format=3 uid="uid://ux8n3eom7qj4"]
+
+[ext_resource type="ArrayMesh" uid="uid://ckbirf0rpo481" path="res://enemies/target.obj" id="1_mkp7g"]
+[ext_resource type="Script" path="res://enemies/Enemy.gd" id="2_v0h1t"]
+[ext_resource type="PackedScene" uid="uid://cqaninhjejyl0" path="res://Scenes/health_bar_3d.tscn" id="3_q0gyp"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_sh546"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_k4f5u"]
+size = Vector3(1, 2.48221, 0.449463)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qik3y"]
+size = Vector3(1.46777, 2.2309, 1.50586)
+
+[node name="Target" type="MeshInstance3D"]
+mesh = ExtResource("1_mkp7g")
+script = ExtResource("2_v0h1t")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(175, 25)
+
+[node name="EnemyHealthBar3D" parent="SubViewport" instance=ExtResource("3_q0gyp")]
+unique_name_in_owner = true
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7708, 0)
+billboard = 1
+texture = SubResource("ViewportTexture_sh546")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.29243, 0.000366211)
+shape = SubResource("BoxShape3D_k4f5u")
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40201, 0)
+shape = SubResource("BoxShape3D_qik3y")
