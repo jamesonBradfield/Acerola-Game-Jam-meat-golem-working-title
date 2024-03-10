@@ -8,8 +8,6 @@ var room_script = load("res://dungeon generation/room_script.gd")
 @export var grid_map_path : NodePath
 @export var debug_rooms : bool
 @onready var grid_map : GridMap = get_node(grid_map_path)
-@export var nav_region_path : NodePath
-@onready var navigation_region : NavigationRegion3D = get_node(nav_region_path)
 var max_width_value : int
 var total_distance_from_start : int = 0
 @export var scaling_value : float  = 1
@@ -122,13 +120,12 @@ func create_dungeon():
 	ready_room_for_bounds.emit()
 	# set_self_scale(scaling_value)
 	offset_room_children_by_new_parent_position()
+	emit_signal("get_room_width_and_height",max_width_value)
 	dungeon_data.set_used_rooms_to_false()
 	dungeon_data.spawn_player_in_random_room(scaling_value)
 	if debug_rooms:
 		hide_each_room_for_debugging()
-	add_children_to_nav_region()
-	var on_thread : bool = true
-	navigation_region.bake_navigation_mesh(on_thread)
+
 
 
 func _on_gun_gen_hallways_done():
@@ -195,9 +192,3 @@ func set_scaling_value(arg):
 func set_max_width_value(arg):
 	print("max_width_value has been changed to : " + str(arg))
 	max_width_value = arg
-
-func add_children_to_nav_region():
-	for c in get_children():
-		if c != navigation_region:
-			c.reparent(navigation_region)
-			set_owner(owner)

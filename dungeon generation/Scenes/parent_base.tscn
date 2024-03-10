@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" path="res://dungeon generation/room_script.gd" id="1_i1upr"]
 
-[node name="ParentBase" type="Node3D"]
+[node name="ParentBase" type="Area3D"]
 script = ExtResource("1_i1upr")

@@ -1,9 +1,8 @@
-[gd_resource type="Resource" script_class="Weapons" load_steps=6 format=3 uid="uid://bea4ddi12r04h"]
+[gd_resource type="Resource" script_class="Weapons" load_steps=5 format=3 uid="uid://bea4ddi12r04h"]
 
 [ext_resource type="Script" path="res://weapons/weapons.gd" id="1_2j8g4"]
 [ext_resource type="ArrayMesh" uid="uid://dm62dp4uvnbdj" path="res://weapons/Models/pistol.obj" id="1_4dlxq"]
 [ext_resource type="AudioStream" uid="uid://cgbi4ejvu8l2b" path="res://weapons/sounds/377145__nioczkus__pistol-draw-unholster.ogg" id="1_fle0k"]
-[ext_resource type="PackedScene" uid="uid://cuodxb4ueo3qg" path="res://weapons/grenade.tscn" id="2_it5a7"]
 [ext_resource type="AudioStream" uid="uid://c5nsodo3ctv1n" path="res://weapons/sounds/163456__lemudcrab__pistol-shot(LeMudCrab freesound).ogg" id="4_46pnt"]
 
 [resource]
@@ -11,22 +10,18 @@ script = ExtResource("1_2j8g4")
 name = &"Pistol"
 position = Vector3(0.582, -0.264, -0.682)
 rotation = Vector3(0, 0, 0)
-gun_muzzle = Vector3(0, 0.0320277, -0.186425)
+gun_muzzle_point = Vector3(0, 0.0342084, -0.177449)
 mesh = ExtResource("1_4dlxq")
 activate_animation = &"assault_rifle_ready"
-shooting_animation = &"pistol_shoot"
-fire_rate = 0.25
-damage = 5
-max_ammo = 10
+shooting_animation = &"assault_rifle_shoot"
+fire_rate = 0.0
+damage = 0
+max_ammo = 0
 current_ammo = 0
-is_semi_auto = true
+is_semi_auto = false
 explosive = false
-raycast_range = 1000.0
-shoot_cooldown_max = 0.25
-shoot_cooldown_current = 0.0
+raycast_range = 30.0
 activate_sound = ExtResource("1_fle0k")
 shooting_sound = ExtResource("4_46pnt")
 spray_randomness_vertical = 0.0
 spray_randomness_horizontal = 0.0
-grenade_scene = ExtResource("2_it5a7")
-grenade_force = 15.0
