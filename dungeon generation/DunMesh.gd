@@ -1,37 +1,35 @@
 @tool
 extends Node3D
 signal ready_room_for_bounds
-signal get_room_width_and_height
+signal post_process_rooms
 var room_script = load("res://dungeon generation/room_script.gd")
 @export var start : bool = false : set = set_start
 # @export var sort : bool = false : set = sortTiles
 @export var grid_map_path : NodePath
-@export var debug_rooms : bool
 @onready var grid_map : GridMap = get_node(grid_map_path)
 @export var nav_region_path : NodePath
 @onready var navigation_region : NavigationRegion3D = get_node(nav_region_path)
-var max_width_value : int
 var total_distance_from_start : int = 0
-@export var scaling_value : float  = 1
 var room_parent_index : int = 0
 var parent_base : PackedScene = preload("res://dungeon generation/Scenes/parent_base.tscn")
 var dun_cell_scene : PackedScene = preload("res://dungeon generation/Scenes/DunCellBasicNoMat.tscn")
+@export var room_array : Array[Room]
 var directions : Dictionary = {
 	"up" :Vector3i.FORWARD, "down" : Vector3i.BACK,
 	"left" : Vector3i.LEFT, "right" : Vector3i.RIGHT
 }
 
 func _ready():
-	get_parent().connect("scale_mesh",set_scaling_value)
-	get_parent().connect("get_max_room_size",set_max_width_value)
-
+	# connect signals to our various generation scripts
+	get_parent().connect("hallwaysDone",create_dungeon)
+# start function called by changing the start bool
 func set_start(_val:bool)->void:	
 	if Engine.is_editor_hint():
 		create_dungeon()
 	elif not Engine.is_editor_hint():
 		create_dungeon()
 
-
+# some meta programming to remove unwanted walls
 func handle_none(cell:Node3D,dir:String):
 	cell.call("remove_door_"+dir)
 func handle_00(cell:Node3D,dir:String):
@@ -58,15 +56,20 @@ func handle_21(cell:Node3D,dir:String):
 func handle_22(cell:Node3D,dir:String):
 	cell.call("remove_wall_"+dir)
 	cell.call("remove_door_"+dir)
-
+# this function is a bit complicated I will comment the individual steps with pseudo-code
 func create_dungeon():
 	print("create_dungeon has started.")
+	# we need to reset the scale (there's a lot of magic numbers)
 	set_self_scale(1)
+	# naming index for rooms
 	room_parent_index = 0
 	dungeon_data.room_nodes.clear()
 	for c in get_children():
 		remove_child(c)
 		c.queue_free()
+	for n in navigation_region.get_children():
+		navigation_region.remove_child(n)
+		n.queue_free()
 	var t : int = 0
 	var parent = add_area_to_dun_mesh()
 	var last_dun_cell
@@ -118,22 +121,17 @@ func create_dungeon():
 		if t%20 == 9 : await get_tree().create_timer(0).timeout
 	print("mesh generation is done. Moving on to room cleanup")
 	grid_map.visible = false
-	remove_weird_rooms()
-	ready_room_for_bounds.emit()
-	# set_self_scale(scaling_value)
-	offset_room_children_by_new_parent_position()
-	dungeon_data.set_used_rooms_to_false()
-	dungeon_data.spawn_player_in_random_room(scaling_value)
-	if debug_rooms:
-		hide_each_room_for_debugging()
-	add_children_to_nav_region()
-	var on_thread : bool = true
-	navigation_region.bake_navigation_mesh(on_thread)
-
-
-func _on_gun_gen_hallways_done():
-	set_start(true)
-
+	emit_signal("ready_room_for_bounds")
+	set_self_scale(dungeon_data.scaling_value)
+	emit_signal("post_process_rooms")
+func add_area_to_dun_mesh():
+	var area = parent_base.instantiate()
+	add_child(area)
+	area.set_owner(owner)
+	area.name = "room_" + str(room_parent_index)
+	dungeon_data.room_nodes.append(area)
+	room_parent_index += 1
+	return area
 
 func add_cells_to_new_room_node(dun_cell_position,last_dun_cell_position):
 	if dun_cell_position.distance_to(last_dun_cell_position) == 1:	
@@ -146,58 +144,7 @@ func add_cells_to_new_room_node(dun_cell_position,last_dun_cell_position):
 	total_distance_from_start = 0
 	return true
 
-
-func add_area_to_dun_mesh():
-	var area = parent_base.instantiate()
-	add_child(area)
-	area.set_owner(owner)
-	area.name = "room_" + str(room_parent_index)
-	dungeon_data.room_nodes.append(area)
-	room_parent_index += 1
-	return area
-
-
-func hide_each_room_for_debugging():
-	for i in dungeon_data.room_nodes:
-		i.visible = false	
-	for i in dungeon_data.room_nodes:
-		await get_tree().create_timer(1).timeout
-		i.visible = true
-
-
-func offset_room_children_by_new_parent_position():
-	for i in dungeon_data.room_nodes.size():
-		var new_parent_position = dungeon_data.room_nodes[i].find_room_nodes_center()
-		print("room " + str(i) + " center is : " + str(new_parent_position))
-		for c in dungeon_data.room_nodes[i].get_children():
-			c.position = c.position - new_parent_position	
-		dungeon_data.room_nodes[i].position = new_parent_position
-
-
-func remove_weird_rooms():
-		if dungeon_data.room_tiles.size() < dungeon_data.room_nodes.size():
-			var offending_room = dungeon_data.room_nodes[0]
-			var children = offending_room.get_children()
-			for c in children:
-				c.reparent(dungeon_data.room_nodes[1])
-				c.set_owner(owner)
-			dungeon_data.room_nodes.remove_at(0)
-			offending_room.free()
-
 func set_self_scale(arg):
 	self.scale.x = arg
 	self.scale.y = arg
 	self.scale.z = arg
-
-func set_scaling_value(arg):
-	scaling_value = arg
-
-func set_max_width_value(arg):
-	print("max_width_value has been changed to : " + str(arg))
-	max_width_value = arg
-
-func add_children_to_nav_region():
-	for c in get_children():
-		if c != navigation_region:
-			c.reparent(navigation_region)
-			set_owner(owner)

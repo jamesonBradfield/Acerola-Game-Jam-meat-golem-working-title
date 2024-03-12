@@ -1,6 +1,6 @@
 @tool
 extends Node3D
-signal hallwaysDone
+signal hallwaysDone()
 signal scale_mesh(mesh_scale)
 signal get_max_room_size(max_room_size)
 @onready var grid_map : GridMap = $GridMap
@@ -12,11 +12,16 @@ signal get_max_room_size(max_room_size)
 @export var room_recursion : int = 15
 @export var min_room_size : int = 2 
 @export var max_room_size : int = 4 : set = set_max_room_size
-@export var mesh_scale : int : set = set_mesh_scale
+@export var mesh_scale : float : set = set_mesh_scale
 @export var start : bool = false : set = set_start
 @export var clear : bool = false : set = set_clear
 @export var can_reload_level_with_space : bool = false
 @export_multiline var custom_seed : String = "" : set = set_seed 
+# we are gonna create an array of room objects we can grab from when we need to assign a purpose to each room.
+@export var ROOM_TYPE : Array[Room] :
+	set(value):
+		ROOM_TYPE = value
+		dungeon_data.ROOM_TYPE = value
 # the center of all tiles in a room (i think) IE room center
 var room_positions : PackedVector3Array
 
@@ -36,7 +41,7 @@ func set_start(_val:bool)->void:
 		generate()
 	elif not Engine.is_editor_hint():
 		generate()
-
+	print("dun_gen has been started")
 func set_clear(_val:bool):
 	for c in dun_mesh.get_children():
 		dun_mesh.remove_child(c)
@@ -63,6 +68,7 @@ func visualize_border():
 		grid_map.set_cell_item( Vector3i(-1,0,i),3)
 
 func generate():
+	print("dungeon generating.")
 	dungeon_data.room_tiles.clear()
 	room_positions.clear()
 	var t : int = 0
@@ -83,7 +89,7 @@ func generate():
 		mst_graph.add_point(mst_graph.get_available_point_id(),Vector2(p.x,p.z))
 	
 	var delaunay : Array = Array(Geometry2D.triangulate_delaunay(rpv2))
-	
+	print("setting delaunay triangulation.")
 	for i in delaunay.size()/3:
 		var p1 : int = delaunay.pop_front()
 		var p2 : int = delaunay.pop_front()
@@ -165,7 +171,7 @@ func create_hallways(hallway_graph:AStar2D):
 			if grid_map.get_cell_item(pos) <0:
 				grid_map.set_cell_item(pos,1)
 		if _t%16 == 15: await  get_tree().create_timer(0).timeout
-	hallwaysDone.emit()	
+	emit_signal("hallwaysDone")	
 	emit_signal("scale_mesh",mesh_scale)
 	
 	

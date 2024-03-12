@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="Room" load_steps=3 format=3 uid="uid://b036xnc38anj0"]
+
+[ext_resource type="PackedScene" uid="uid://ciey80i51wm50" path="res://dungeon generation/room_resources/scenes/healing_fountain.tscn" id="1_gu15r"]
+[ext_resource type="Script" path="res://dungeon generation/room_resource.gd" id="1_o2vwe"]
+
+[resource]
+script = ExtResource("1_o2vwe")
+room_purpose = "Shop"
+instantiate_objects = Array[PackedScene]([ExtResource("1_gu15r")])

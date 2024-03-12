@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://b8rvtpyouj7bc"
+path="res://.godot/imported/spawnpoint.obj-84b483187bac61666dc71c24b977fc37.mesh"
+
+[deps]
+
+files=["res://.godot/imported/spawnpoint.obj-84b483187bac61666dc71c24b977fc37.mesh"]
+
+source_file="res://dungeon generation/room_resources/Models/spawnpoint.obj"
+dest_files=["res://.godot/imported/spawnpoint.obj-84b483187bac61666dc71c24b977fc37.mesh", "res://.godot/imported/spawnpoint.obj-84b483187bac61666dc71c24b977fc37.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false

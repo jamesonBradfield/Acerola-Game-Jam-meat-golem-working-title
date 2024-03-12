@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="Room" load_steps=2 format=3 uid="uid://sh33kissmh5o"]
+
+[ext_resource type="Script" path="res://dungeon generation/room_resource.gd" id="1_sa60g"]
+
+[resource]
+script = ExtResource("1_sa60g")
+room_purpose = "basic"
+instantiate_objects = Array[PackedScene]([])

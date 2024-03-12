@@ -18,3 +18,11 @@ func remove_door_left():
 	$door_left.free()
 func remove_door_right():
 	$door_right.free()
+
+func return_door_areas() -> Array[Area3D]:
+	var temp_array : Array[Area3D]
+	temp_array.append(get_node_or_null("door_right/Area3D"))
+	temp_array.append(get_node_or_null("door_left/Area3D"))
+	temp_array.append(get_node_or_null("door_down/Area3D"))
+	temp_array.append(get_node_or_null("door_up/Area3D"))
+	return temp_array
