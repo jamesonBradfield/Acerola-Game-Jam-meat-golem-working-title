@@ -6,17 +6,42 @@ signal get_max_room_size(max_room_size)
 @onready var grid_map : GridMap = $GridMap
 @onready var dun_mesh = $DunMesh
 @export_range(0,1) var survival_chance : float = 0.25
-@export var border_size : int = 20 : set = set_border_size
+@export var border_size : int = 20 :
+	set(value):	
+		border_size = value
+		if Engine.is_editor_hint():
+			visualize_border()
 @export var room_number : int = 4
 @export var room_margin : int = 1
 @export var room_recursion : int = 15
 @export var min_room_size : int = 2 
-@export var max_room_size : int = 4 : set = set_max_room_size
-@export var mesh_scale : float : set = set_mesh_scale
-@export var start : bool = false : set = set_start
-@export var clear : bool = false : set = set_clear
+@export var max_room_size : int = 4 :
+	set(value):
+		max_room_size = value
+		emit_signal("get_max_room_size","value")
+@export var mesh_scale : float : 
+	set(value):
+		mesh_scale = value
+		emit_signal("scale_mesh","value")
+@export var start : bool = false : 
+	set(value):
+		if dun_mesh == null:
+			print("dun_mesh can't be found.")
+		if Engine.is_editor_hint():
+			generate()
+		elif not Engine.is_editor_hint():
+			generate()
+		print("dun_gen has been started")
+@export var clear : bool = false :
+	set(value):
+		for c in dun_mesh.get_children():
+			dun_mesh.remove_child(c)
+			c.queue_free()
 @export var can_reload_level_with_space : bool = false
-@export_multiline var custom_seed : String = "" : set = set_seed 
+@export_multiline var custom_seed : String = "" :
+	set(value):
+		custom_seed = value
+		seed(value.hash())
 # we are gonna create an array of room objects we can grab from when we need to assign a purpose to each room.
 @export var ROOM_TYPE : Array[Room] :
 	set(value):
@@ -24,37 +49,6 @@ signal get_max_room_size(max_room_size)
 		dungeon_data.ROOM_TYPE = value
 # the center of all tiles in a room (i think) IE room center
 var room_positions : PackedVector3Array
-
-func set_border_size(val : int)->void:
-	border_size = val
-	if Engine.is_editor_hint():
-		visualize_border()
-
-func set_seed(val:String)->void:
-	custom_seed = val
-	seed(val.hash())
-
-func set_start(_val:bool)->void:
-	if dun_mesh == null:
-		print("dun_mesh can't be found.")
-	if Engine.is_editor_hint():
-		generate()
-	elif not Engine.is_editor_hint():
-		generate()
-	print("dun_gen has been started")
-func set_clear(_val:bool):
-	for c in dun_mesh.get_children():
-		dun_mesh.remove_child(c)
-		c.queue_free()
-
-
-func set_mesh_scale(val:float):
-	mesh_scale = val
-	emit_signal("scale_mesh","val")
-
-func set_max_room_size(val:int):
-	max_room_size = val
-	emit_signal("get_max_room_size","val")
 
 # func _ready():
 # 	set_start(true)
@@ -72,7 +66,9 @@ func generate():
 	dungeon_data.room_tiles.clear()
 	room_positions.clear()
 	var t : int = 0
-	if custom_seed : set_seed(custom_seed)
+	if custom_seed : 	
+		custom_seed = custom_seed
+		seed(custom_seed.hash())
 	visualize_border()
 	for i in room_number:
 		t+=1
@@ -172,14 +168,7 @@ func create_hallways(hallway_graph:AStar2D):
 				grid_map.set_cell_item(pos,1)
 		if _t%16 == 15: await  get_tree().create_timer(0).timeout
 	emit_signal("hallwaysDone")	
-	emit_signal("scale_mesh",mesh_scale)
-	
-	
-
-	
-	
-	
-
+	emit_signal("scale_mesh",mesh_scale)	
 
 func make_room(rec:int):
 	if !rec>0:
@@ -206,11 +195,13 @@ func make_room(rec:int):
 			grid_map.set_cell_item(pos,0)
 			room.append(pos)
 	dungeon_data.room_tiles.append(room)
-	var avg_x : float = start_pos.x + (float(width)/2)
-	var avg_z : float = start_pos.z + (float(height)/2)
-	var pos : Vector3 = Vector3(avg_x,0,avg_z)
+	var pos : Vector3 = Vector3(start_pos) + Vector3(width,0.0,height)/2.0
 	room_positions.append(pos)
 
 func _process(_delta):
 	if Input.is_action_just_pressed("ui_accept") && can_reload_level_with_space == true:
-		set_start(true)
+		if Engine.is_editor_hint():
+			generate()
+		elif not Engine.is_editor_hint():
+			generate()
+		print("dun_gen has been started")

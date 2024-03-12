@@ -28,35 +28,19 @@ func set_start(_val:bool)->void:
 		create_dungeon()
 	elif not Engine.is_editor_hint():
 		create_dungeon()
+func handle_all(cell:Node3D,dir:String,key:String) :
+	match key :
+		""   : cell.call("remove_door_"+dir) # for handle_none
+		"00" : cell.call("remove_wall_"+dir) ; cell.call("remove_door_"+dir)
+		"01" : cell.call("remove_door_"+dir)
+		"02" : cell.call("remove_wall_"+dir) ;	cell.call("remove_door_"+dir)
+		"10" : cell.call("remove_door_"+dir)
+		"11" : cell.call("remove_wall_"+dir) ; cell.call("remove_door_"+dir)
+		"12" : cell.call("remove_wall_"+dir) ; cell.call("remove_door_"+dir)
+		"20" : cell.call("remove_wall_"+dir) ; cell.call("remove_door_"+dir)
+		"21" : cell.call("remove_wall_"+dir)
+		"22" : cell.call("remove_wall_"+dir) ; cell.call("remove_door_"+dir)
 
-# some meta programming to remove unwanted walls
-func handle_none(cell:Node3D,dir:String):
-	cell.call("remove_door_"+dir)
-func handle_00(cell:Node3D,dir:String):
-	cell.call("remove_wall_"+dir)
-	cell.call("remove_door_"+dir)
-func handle_01(cell:Node3D,dir:String):
-	cell.call("remove_door_"+dir)
-func handle_02(cell:Node3D,dir:String):
-	cell.call("remove_wall_"+dir)
-	cell.call("remove_door_"+dir)
-func handle_10(cell:Node3D,dir:String):
-	cell.call("remove_door_"+dir)
-func handle_11(cell:Node3D,dir:String):
-	cell.call("remove_wall_"+dir)
-	cell.call("remove_door_"+dir)
-func handle_12(cell:Node3D,dir:String):
-	cell.call("remove_wall_"+dir)
-	cell.call("remove_door_"+dir)
-func handle_20(cell:Node3D,dir:String):
-	cell.call("remove_wall_"+dir)
-	cell.call("remove_door_"+dir)
-func handle_21(cell:Node3D,dir:String):
-	cell.call("remove_wall_"+dir)
-func handle_22(cell:Node3D,dir:String):
-	cell.call("remove_wall_"+dir)
-	cell.call("remove_door_"+dir)
-# this function is a bit complicated I will comment the individual steps with pseudo-code
 func create_dungeon():
 	print("create_dungeon has started.")
 	# we need to reset the scale (there's a lot of magic numbers)
@@ -112,18 +96,15 @@ func create_dungeon():
 			for i in 4:
 				var cell_n : Vector3i = cell + directions.values()[i]
 				var cell_n_index : int = grid_map.get_cell_item(cell_n)
-				if cell_n_index ==-1\
-				|| cell_n_index == 3:
-					handle_none(dun_cell,directions.keys()[i])
-				else:
-					var key : String = str(cell_index) + str(cell_n_index)
-					call("handle_"+key,dun_cell,directions.keys()[i])
+				var key : String = str(cell_index) + str(cell_n_index)
+				handle_all(dun_cell,directions.keys()[i],key)
 		if t%20 == 9 : await get_tree().create_timer(0).timeout
 	print("mesh generation is done. Moving on to room cleanup")
 	grid_map.visible = false
 	emit_signal("ready_room_for_bounds")
 	set_self_scale(dungeon_data.scaling_value)
 	emit_signal("post_process_rooms")
+
 func add_area_to_dun_mesh():
 	var area = parent_base.instantiate()
 	add_child(area)
@@ -140,7 +121,6 @@ func add_cells_to_new_room_node(dun_cell_position,last_dun_cell_position):
 	if floor(dun_cell_position.distance_to(last_dun_cell_position)) == total_distance_from_start:
 		total_distance_from_start = 0
 		return false
-	print(floor(dun_cell_position.distance_to(last_dun_cell_position)))
 	total_distance_from_start = 0
 	return true
 

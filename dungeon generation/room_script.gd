@@ -52,7 +52,8 @@ func assign_door():
 					sub_doors.connect("body_entered",player_is_entering_room)
 
 func player_is_entering_room(body: Node3D):
-	print("player is in " + str(self.name))
+	if body == PlayerGlobals.player:
+		print("player is in " + str(self.name))
 	# ready_room
 
 func instantiate_room_objects():
