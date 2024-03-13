@@ -10,15 +10,17 @@ var player_scene : PackedScene = preload("res://addons/fpc/character.tscn")
 @onready var GunGen : Node3D = get_node("/root/GunGen")
 @onready var dun_mesh = get_node("/root/GunGen/DunMesh")
 @onready var navigation_region : NavigationRegion3D = get_node("/root/GunGen/NavigationRegion3D")
+# @onready var loading_screen : Control = %LoadingScreen
 var ROOM_TYPE : Array[Room] :
 	set(value):
 		ROOM_TYPE = value
 
 func _ready():
-	GunGen.connect("scale_mesh",func(val):
-		scaling_value = val
-	)
-	dun_mesh.connect("post_process_rooms",post_process_rooms)
+	if GunGen && dun_mesh:
+		GunGen.connect("scale_mesh",func(val):
+			scaling_value = val
+		)
+		dun_mesh.connect("post_process_rooms",post_process_rooms)
 
 func post_process_rooms():
 	remove_weird_rooms()
@@ -27,9 +29,11 @@ func post_process_rooms():
 		offset_room_children_by_new_parent_position(current_room)
 		used_rooms.append(false)
 		add_children_to_nav_region(current_room)
-	spawn_player_in_random_room()
 	if debug_rooms:
 		hide_each_room_for_debugging()
+	spawn_player_in_random_room()
+	# loading_screen.visible = false
+	
 
 # TODO: we need to rewrite the room choosing algorithm to use our resource, and store our width and height in our room_script.
 func get_random_unused_room():

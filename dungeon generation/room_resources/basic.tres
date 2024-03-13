@@ -6,3 +6,4 @@
 script = ExtResource("1_sa60g")
 room_purpose = "basic"
 instantiate_objects = Array[PackedScene]([])
+count_to_instantiate = 0
