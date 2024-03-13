@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://ok8yfts8ulsv"
+path="res://.godot/imported/Giant.obj-6a46d0c91aa5883fa7fbbd9ce48bf190.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Giant.obj-6a46d0c91aa5883fa7fbbd9ce48bf190.mesh"]
+
+source_file="res://enemies/Models/Giant.obj"
+dest_files=["res://.godot/imported/Giant.obj-6a46d0c91aa5883fa7fbbd9ce48bf190.mesh", "res://.godot/imported/Giant.obj-6a46d0c91aa5883fa7fbbd9ce48bf190.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false
